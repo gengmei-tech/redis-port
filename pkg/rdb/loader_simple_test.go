@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CodisLabs/redis-port/pkg/rdb"
+	"github.com/gengmei-tech/redis-port/pkg/rdb"
 
 	"github.com/CodisLabs/codis/pkg/utils/assert"
 	"github.com/CodisLabs/codis/pkg/utils/log"

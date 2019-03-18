@@ -13,8 +13,8 @@ import (
 	"github.com/CodisLabs/codis/pkg/utils/log"
 	"github.com/CodisLabs/codis/pkg/utils/sync2/atomic2"
 
-	"github.com/CodisLabs/redis-port/pkg/libs/pipe"
-	"github.com/CodisLabs/redis-port/pkg/rdb"
+	"github.com/gengmei-tech/redis-port/pkg/libs/pipe"
+	"github.com/gengmei-tech/redis-port/pkg/rdb"
 )
 
 func main() {
