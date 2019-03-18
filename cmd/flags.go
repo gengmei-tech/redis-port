@@ -36,6 +36,10 @@ var acceptDB = func(db uint64) bool {
 	return true
 }
 
+var sourceDB uint64
+var setTargetDB = false
+var targetDB uint64
+
 func parseFlags(usage string) *Flags {
 	return parseFlagsFromArgs(usage, os.Args[1:])
 }
@@ -113,6 +117,7 @@ func parseFlagsFromArgs(usage string, args []string) *Flags {
 		}
 	}
 
+	// if only supply db, then source db = target db
 	if s, ok := d["--db"].(string); ok && s != "" && s != "*" {
 		n, err := strconv.Atoi(s)
 		if err != nil {
@@ -124,6 +129,22 @@ func parseFlagsFromArgs(usage string, args []string) *Flags {
 		acceptDB = func(db uint64) bool {
 			return db == uint64(n)
 		}
+		// source db
+		sourceDB = uint64(n)
+	}
+
+	// if supply db and tdb, then db is source db, tdb is the target db, transfer from source db to target db
+	if s, ok := d["--tdb"].(string); ok && s != "" && s != "*" {
+		n, err := strconv.Atoi(s)
+		if err != nil {
+			log.PanicErrorf(err, "parse --tdb=%q failed", s)
+		}
+		if n < 0 {
+			log.Panicf("parse --tdb=%q failed", s)
+		}
+		// target db
+		targetDB = uint64(n)
+		setTargetDB = true
 	}
 
 	if s, ok := d["--tmpfile"].(string); ok {

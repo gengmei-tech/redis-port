@@ -20,7 +20,7 @@ import (
 func main() {
 	const usage = `
 Usage:
-	redis-sync [--ncpu=N] (--master=MASTER|MASTER) --target=TARGET [--db=DB] [--tmpfile-size=SIZE [--tmpfile=FILE]]
+	redis-sync [--ncpu=N] (--master=MASTER|MASTER) --target=TARGET [--db=DB] [--tdb=DB] [--tmpfile-size=SIZE [--tmpfile=FILE]]
 	redis-sync  --version
 
 Options:
@@ -34,9 +34,9 @@ Options:
 Examples:
 	$ redis-sync -m 127.0.0.1:6379 -t 127.0.0.1:6380
 	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380
-	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0
-	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tmpfile-size=10gb
-	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tmpfile-size=10gb --tmpfile ~/sockfile.tmp
+	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tdb=1
+	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tdb=1 --tmpfile-size=10gb
+	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tdb=1 --tmpfile-size=10gb --tmpfile ~/sockfile.tmp
 `
 	var flags = parseFlags(usage)
 

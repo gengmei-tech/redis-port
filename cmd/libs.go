@@ -467,6 +467,7 @@ func genRestoreCommands(e *rdb.DBEntry, db uint64, on func(cmd string, args ...i
 	if db != e.DB {
 		on("SELECT", e.DB)
 	}
+
 	var key = e.Key.BytesUnsafe()
 	on("DEL", key)
 
@@ -561,6 +562,10 @@ func doRestoreDBEntry(entryChan <-chan *rdb.DBEntry, addr, auth string, on func(
 		var db uint64
 		for e := range entryChan {
 			if on(e) {
+				// transfer to target another db
+				if setTargetDB {
+					e.DB = targetDB
+				}
 				genRestoreCommands(e, db, func(cmd string, args ...interface{}) {
 					redigoSendCommand(c, cmd, args...)
 					redigoFlushConnIf(c, func() bool {
@@ -628,10 +633,16 @@ func doRestoreAoflog(reader *bufio2.Reader, addr, auth string, on func(db uint64
 				log.PanicErrorf(err, "bad select command %+v", r)
 			}
 			db = uint64(n)
+
+			// rewrite target db
+			if setTargetDB {
+				r.Array[1].Value = []byte(strconv.Itoa(int(targetDB)))
+			}
 		}
 		if !on(db, cmd) {
 			continue
 		}
+
 		redisSendCommand(encoder, r, tick.Swap(0) != 0)
 	}
 }
