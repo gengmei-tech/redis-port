@@ -38,7 +38,7 @@ func redisParsePath(path string) (addr, auth string) {
 		log.PanicErrorf(err, "invalid redis address %q", path)
 	}
 	if u.User != nil {
-		return u.Host, u.User.String()
+		return u.Host, u.User.Username()
 	} else {
 		return u.Host, ""
 	}
