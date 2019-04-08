@@ -20,23 +20,24 @@ import (
 func main() {
 	const usage = `
 Usage:
-	redis-sync [--ncpu=N] (--master=MASTER|MASTER) --target=TARGET [--db=DB] [--tdb=DB] [--tmpfile-size=SIZE [--tmpfile=FILE]]
+	redis-sync [--ncpu=N] (--master=MASTER|MASTER) --target=TARGET [--dbmap=dbmap] [--tmpfile-size=SIZE [--tmpfile=FILE]]
 	redis-sync  --version
 
 Options:
 	-n N, --ncpu=N                    Set runtime.GOMAXPROCS to N.
 	-m MASTER, --master=MASTER        The master redis instance ([auth@]host:port).
 	-t TARGET, --target=TARGET        The target redis instance ([auth@]host:port).
-	--db=DB                           Accept db = DB, default is *.
 	--tmpfile=FILE                    Use FILE to as socket buffer.
 	--tmpfile-size=SIZE               Set FILE size. If no --tmpfile is provided, a temporary file under current folder will be created.
+	--dbmap sdb:tdb,sdb:tdb,sdb:tdb......
+
 
 Examples:
 	$ redis-sync -m 127.0.0.1:6379 -t 127.0.0.1:6380
 	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380
-	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tdb=1
-	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tdb=1 --tmpfile-size=10gb
-	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --db=0 --tdb=1 --tmpfile-size=10gb --tmpfile ~/sockfile.tmp
+	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --dbmap=0:1,1:2
+	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --dbmap=0:0,1:2 --tmpfile-size=10gb
+	$ redis-sync    127.0.0.1:6379 -t passwd@127.0.0.1:6380 --dbmap=0:0,1:2 --tmpfile-size=10gb --tmpfile ~/sockfile.tmp
 `
 	var flags = parseFlags(usage)
 

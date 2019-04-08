@@ -563,8 +563,8 @@ func doRestoreDBEntry(entryChan <-chan *rdb.DBEntry, addr, auth string, on func(
 		for e := range entryChan {
 			if on(e) {
 				// transfer to target another db
-				if setTargetDB {
-					e.DB = targetDB
+				if targetDb, ok := dbMap[e.DB]; ok {
+					e.DB = targetDb
 				}
 				genRestoreCommands(e, db, func(cmd string, args ...interface{}) {
 					redigoSendCommand(c, cmd, args...)
@@ -635,7 +635,7 @@ func doRestoreAoflog(reader *bufio2.Reader, addr, auth string, on func(db uint64
 			db = uint64(n)
 
 			// rewrite target db
-			if setTargetDB {
+			if targetDB, ok := dbMap[db]; ok {
 				r.Array[1].Value = []byte(strconv.Itoa(int(targetDB)))
 			}
 		}

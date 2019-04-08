@@ -1,13 +1,10 @@
 language: go
 
-os:
-    - linux
-    - osx
+go_import_path: github.com/gengmei-tech/redis-port
 
 go:
     - 1.11.x
     - 1.10.x
 
 script:
-    - make
     - make gotest

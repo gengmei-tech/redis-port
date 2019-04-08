@@ -35,10 +35,8 @@ type Flags struct {
 var acceptDB = func(db uint64) bool {
 	return true
 }
-
-var sourceDB uint64
-var setTargetDB = false
-var targetDB uint64
+// source db to target db map
+var dbMap = make(map[uint64]uint64)
 
 func parseFlags(usage string) *Flags {
 	return parseFlagsFromArgs(usage, os.Args[1:])
@@ -129,23 +127,36 @@ func parseFlagsFromArgs(usage string, args []string) *Flags {
 		acceptDB = func(db uint64) bool {
 			return db == uint64(n)
 		}
-		// source db
-		sourceDB = uint64(n)
 	}
 
-	// if supply db and tdb, then db is source db, tdb is the target db, transfer from source db to target db
-	if s, ok := d["--tdb"].(string); ok && s != "" && s != "*" {
-		n, err := strconv.Atoi(s)
-		if err != nil {
-			log.PanicErrorf(err, "parse --tdb=%q failed", s)
+	// source db to target db
+	if s, ok := d["--dbmap"].(string); s != "" && ok {
+		tmp := strings.Split(s, ",")
+		if len(tmp) > 0 {
+			for _, m := range tmp {
+				tmp2 := strings.Split(m, ":")
+				if len(tmp2) == 2 {
+					sdb, err := strconv.Atoi(tmp2[0])
+					if err != nil || sdb < 0  {
+						log.PanicErrorf(err, "parse --dbmap=%q failed", s)
+					}
+					tdb, err := strconv.Atoi(tmp2[1])
+					if err != nil || tdb < 0 {
+						log.PanicErrorf(err, "parse --dbmap=%q failed", s)
+					}
+					dbMap[uint64(sdb)] = uint64(tdb)
+				}
+			}
 		}
-		if n < 0 {
-			log.Panicf("parse --tdb=%q failed", s)
+
+		acceptDB = func(db uint64) bool {
+			if _, ok := dbMap[db]; ok {
+				return true
+			}
+			return false
 		}
-		// target db
-		targetDB = uint64(n)
-		setTargetDB = true
 	}
+
 
 	if s, ok := d["--tmpfile"].(string); ok {
 		flags.TmpFile.Path = s
